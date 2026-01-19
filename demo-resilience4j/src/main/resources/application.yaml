@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: demo-resilience4j
+
+consumer:
+  url: "http://localhost:3000"
+
+resilience4j:
+  retry:
+    retry-aspect-order: 2
+    instances:
+      paymentRetry:
+        maxAttempts: 3
+        waitDuration: 500ms
+        retryExceptions:
+          - java.io.IOException
+          - org.springframework.web.client.RestClientException
+
+  circuitbreaker:
+    circuit-breaker-aspect-order: 1
+    instances:
+      paymentCB:
+        automatic-transition-from-open-to-half-open-enabled: true
+        minimumNumberOfCalls: 3
+        slidingWindowSize: 3
+        failureRateThreshold: 100
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
