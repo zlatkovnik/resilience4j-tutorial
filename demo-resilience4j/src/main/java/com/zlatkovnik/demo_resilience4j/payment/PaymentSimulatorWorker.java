@@ -14,11 +14,20 @@ public class PaymentSimulatorWorker {
     private final AtomicInteger idGenerator = new AtomicInteger(0);
 
     private final PaymentService paymentService;
+    private final UnsafePaymentService unsafePaymentService;
 
     @Scheduled(fixedDelayString = "#{T(java.util.concurrent.ThreadLocalRandom).current().nextInt(1000, 3001)}")
     public void runWorker() {
         String txId = "TXN-" + idGenerator.getAndIncrement();
         DepositRequest depositRequest = new DepositRequest(txId, LocalDateTime.now(), null);
-        paymentService.deposit(depositRequest);
+        try {
+            paymentService.deposit(depositRequest);
+        } catch (Exception e) {
+        }
+        DepositRequest unsafeDepositRequest = new DepositRequest(txId, LocalDateTime.now(), null);
+        try {
+            unsafePaymentService.deposit(unsafeDepositRequest);
+        } catch (Exception e) {
+        }
     }
 }
