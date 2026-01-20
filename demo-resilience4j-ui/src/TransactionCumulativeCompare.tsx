@@ -22,12 +22,12 @@ type ApiResponse = {
 
 type CumulativeDataPoint = {
   time: number;
-  safePassed: number;
-  safeFailedHandled: number;
-  safeFailedNotHandled: number;
-  unsafePassed: number;
-  unsafeFailedHandled: number;
-  unsafeFailedNotHandled: number;
+  safeProcessedWithAndWithoutDelay: number;
+  safeProcessedWithDelay: number;
+  unsafeProcessed: number;
+  safeUnprocessed: number;
+  unsafeUnprocessed: number;
+  safeHandledWithDelay: number;
 };
 
 const fetchTransactions = async (url: string): Promise<ApiResponse> => {
@@ -67,12 +67,12 @@ export const TransactionCumulativeCompare: React.FC = () => {
 
       const sorted = allTxs.sort((a, b) => a.timestamp - b.timestamp);
 
-      let safePassed = 0,
-        safeFailedHandled = 0,
-        safeFailedNotHandled = 0;
-      let unsafePassed = 0,
-        unsafeFailedHandled = 0,
-        unsafeFailedNotHandled = 0;
+      let safeProcessedWithDelay = 0;
+      let unsafeProcessed = 0;
+      let safeUnprocessed = 0;
+      let unsafeUnprocessed = 0;
+      let safeHandledWithDelay = 0;
+      let safeProcessedWithAndWithoutDelay = 0;
 
       const cumulative: CumulativeDataPoint[] = [];
 
@@ -82,107 +82,110 @@ export const TransactionCumulativeCompare: React.FC = () => {
 
         if (tx.type === "safe") {
           if (tx.processedTimestamp) {
-            if (delay! > 1000) safeFailedHandled++;
-            else safePassed++;
+            if (delay! > 1000) safeHandledWithDelay++;
+            else safeProcessedWithDelay++;
           } else {
-            safeFailedNotHandled++;
+            safeUnprocessed++;
           }
         } else {
           if (tx.processedTimestamp) {
-            if (delay! > 1000) unsafeFailedHandled++;
-            else unsafePassed++;
+            unsafeProcessed++;
           } else {
-            unsafeFailedNotHandled++;
+            unsafeUnprocessed++;
           }
         }
 
+        safeProcessedWithAndWithoutDelay = safeProcessedWithDelay + safeHandledWithDelay;
+
         cumulative.push({
           time: tx.timestamp,
-          safePassed,
-          safeFailedHandled,
-          safeFailedNotHandled,
-          unsafePassed,
-          unsafeFailedHandled,
-          unsafeFailedNotHandled,
+          safeProcessedWithAndWithoutDelay,
+          safeProcessedWithDelay,
+          unsafeProcessed,
+          safeUnprocessed,
+          unsafeUnprocessed,
+          safeHandledWithDelay,
         });
       }
 
       setData(cumulative);
     };
 
-    // Initial load
     loadData();
-
-    // Set interval to reload every 5 seconds
     const interval = setInterval(loadData, 5000);
-
-    // Cleanup
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <ResponsiveContainer width="100%" height={500}>
-      <LineChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis
-          dataKey="time"
-          type="number"
-          domain={["auto", "auto"]}
-          tickFormatter={(t) => new Date(t).toLocaleTimeString()}
-        />
-        <YAxis
-          label={{ value: "Cumulative count", angle: -90, position: "insideLeft" }}
-        />
-        <Tooltip
-          formatter={(value: any, name: string) => [value, name]}
-          labelFormatter={(label) => new Date(label).toLocaleTimeString()}
-        />
+    <div style={{ backgroundColor: "#1e1e1e", padding: "20px", borderRadius: "8px" }}>
+      <ResponsiveContainer width="100%" height={500}>
+        <LineChart data={data}>
+          <CartesianGrid stroke="#444" strokeDasharray="3 3" />
+          <XAxis
+            dataKey="time"
+            type="number"
+            domain={["auto", "auto"]}
+            tick={{ fill: "#ccc" }}
+            tickFormatter={(t) => new Date(t).toLocaleTimeString()}
+          />
+          <YAxis
+            tick={{ fill: "#ccc" }}
+            label={{ value: "Cumulative count", angle: -90, position: "insideLeft", fill: "#ccc" }}
+          />
+          <Tooltip
+            contentStyle={{ backgroundColor: "#333", border: "1px solid #555", color: "#fff" }}
+            formatter={(value: any, name: string) => [value, name]}
+            labelFormatter={(label) => new Date(label).toLocaleTimeString()}
+          />
 
-        {/* SAFE */}
-        <Line type="monotone" dataKey="safePassed" stroke="green" name="Safe Passed" dot={false} />
-        <Line
-          type="monotone"
-          dataKey="safeFailedHandled"
-          stroke="orange"
-          name="Safe Failed → handled"
-          dot={false}
-          strokeDasharray="5 5"
-        />
-        <Line
-          type="monotone"
-          dataKey="safeFailedNotHandled"
-          stroke="red"
-          name="Safe Failed → not handled"
-          dot={false}
-          strokeDasharray="2 2"
-        />
-
-        {/* UNSAFE */}
-        <Line
-          type="monotone"
-          dataKey="unsafePassed"
-          stroke="#008000"
-          name="Unsafe Passed"
-          dot={false}
-          strokeDasharray="5 2"
-        />
-        <Line
-          type="monotone"
-          dataKey="unsafeFailedHandled"
-          stroke="#FFA500"
-          name="Unsafe Failed → handled"
-          dot={false}
-          strokeDasharray="5 5"
-        />
-        <Line
-          type="monotone"
-          dataKey="unsafeFailedNotHandled"
-          stroke="#FF0000"
-          name="Unsafe Failed → not handled"
-          dot={false}
-          strokeDasharray="2 2"
-        />
-      </LineChart>
-    </ResponsiveContainer>
+          {/* Lines with your colors */}
+                    <Line
+            type="monotone"
+            dataKey="safeProcessedWithAndWithoutDelay"
+            stroke="#0496C7"
+            name="Safe processed"
+            dot={false}
+          />
+          <Line
+            type="monotone"
+            dataKey="safeProcessedWithDelay"
+            stroke="#32CD32"
+            name="Safe processed"
+            dot={false}
+          />
+          <Line
+            type="monotone"
+            dataKey="unsafeProcessed"
+            stroke="#006400"
+            name="Unsafe processed"
+            dot={false}
+          />
+          <Line
+            type="monotone"
+            dataKey="safeUnprocessed"
+            stroke="#FF6B6B"
+            name="Safe unprocessed"
+            dot={false}
+            strokeDasharray="5 2"
+          />
+          <Line
+            type="monotone"
+            dataKey="unsafeUnprocessed"
+            stroke="#8B0000"
+            name="Unsafe unprocessed"
+            dot={false}
+            strokeDasharray="5 2"
+          />
+          <Line
+            type="monotone"
+            dataKey="safeHandledWithDelay"
+            stroke="#FFA500"
+            name="Safe handled with delay"
+            dot={false}
+            strokeDasharray="3 3"
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
   );
 };
