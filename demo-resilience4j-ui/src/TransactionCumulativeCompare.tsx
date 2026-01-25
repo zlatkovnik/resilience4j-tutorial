@@ -183,7 +183,7 @@ export const TransactionCumulativeCompare: React.FC = () => {
           />
           <Tooltip
             contentStyle={{ backgroundColor: "#333", border: "1px solid #555", color: "#fff" }}
-            formatter={(value: string, name: string) => [value, name]}
+            formatter={(value?: string, name?: string) => [value, name]}
             labelFormatter={(label) => new Date(label).toLocaleTimeString()}
           />
 

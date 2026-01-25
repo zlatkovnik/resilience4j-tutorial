@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  backend:
+    image: demo-resilience4j-backend
+    build:
+      context: ./demo-resilience4j
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+
+  frontend:
+    image: demo-resilience4j-frontend
+    build:
+      context: ./demo-resilience4j-ui
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
