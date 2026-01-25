@@ -31,11 +31,11 @@ public class PaymentProcessorController {
 
     private void startFailureCycle() {
         // Every 20-40 seconds, trigger a "downtime window"
-        long nextWindowDelay = 20 + random.nextInt(20);
+        long nextWindowDelay = 30 + random.nextInt(30);
 
         scheduler.schedule(() -> {
             isAvailable.set(false);
-            int downtimeDuration = 5 + random.nextInt(6); // 5 to 10 seconds
+            int downtimeDuration = 15 + random.nextInt(16); // 15 to 30 seconds
             log.info(">>> MOCK API CRASHING for {}s <<<", downtimeDuration);
             statusChanges.add(new PaymentProcessorStatusChange(0, LocalDateTime.now()));
 
