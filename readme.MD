@@ -94,6 +94,28 @@ Periodi nedostupnosti eksternog servisa su prikazani crvenim providnim trakama n
 - `/api/payment/status/unsafe` — status bez otpornosti
 - `/external-api/downtime` — informacije o downtime-u eksternog servisa
 
+## Simulacija otkaza i opterećenja
+
+U okviru projekta implementirane su dve vrste simulacija kako bi se testirali različiti aspekti otpornosti sistema:
+
+### 1. Nepredvidiv Saobraćaj (Traffic Generator)
+
+Klasa `PaymentSimulatorWorker` generiše zahteve ka sistemu u dva režima rada:
+
+- **Normal Mode:** Stabilan tok saobraćaja, zahtevi se šalju na svakih 2000ms.
+- **Burst Mode (Spike):** Nasumično se aktivira režim visokog opterećenja u trajanju od 5 sekundi, tada se zahtevi šalju na svakih 50ms.
+
+Cilj ove simulacije je testiranje ponašanja Rate Limiter i Bulkhead mehanizama pod pritiskom i u uslovima naglog rasta saobraćaja.
+
+### 2. Nestabilan Eksterni Servis (Fault Injection)
+
+Eksterni API je programiran da simulira periodične ispade:
+
+- **Frekvencija otkaza:** Servis "pada" nasumično na svakih 30 do 50 sekundi.
+- **Trajanje otkaza:** Nedostupnost traje između 10 i 20 sekundi.
+
+Cilj ove simulacije je testiranje Circuit Breaker i Retry mehanizama, kao i oporavka sistema putem Dead Letter Queue (DLQ).
+
 ## Tutorijal i dodatna objašnjenja
 
 - Primer implementacije Circuit Breaker-a, Bulkhead-a, Rate Limiter-a i Retry-a nalazi se u klasi `PaymentService`.
