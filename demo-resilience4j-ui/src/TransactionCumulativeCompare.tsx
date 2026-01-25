@@ -19,6 +19,7 @@ type Transaction = {
 type ApiResponse = {
   processedDepositRequests: Transaction[];
   unprocessedDepositRequests: Transaction[];
+  circuitBreakerPreventedCalls?: number;
 };
 
 type CumulativeDataPoint = {
@@ -56,6 +57,7 @@ const fetchServerStatusChanges = async (url: string): Promise<ServerStatusChange
 export const TransactionCumulativeCompare: React.FC = () => {
   const [data, setData] = useState<CumulativeDataPoint[]>([]);
   const [downtime, setDowntime] = useState<ServerDowntime[]>([]);
+  const [circuitBreakerPreventedCalls, setCircuitBreakerPreventedCalls] = useState<number>(0);
 
   useEffect(() => {
     const loadData = async () => {
@@ -64,6 +66,8 @@ export const TransactionCumulativeCompare: React.FC = () => {
         fetchTransactions("http://localhost:8080/api/payment/status/unsafe"),
         fetchServerStatusChanges("http://localhost:8080/external-api/downtime"),
       ]);
+
+      setCircuitBreakerPreventedCalls(safeRes.circuitBreakerPreventedCalls || 0);
 
       const downtimes: ServerDowntime[] = [];
       for (let i = 0; i < serverStatusChangesRes.length; i++) {
@@ -150,6 +154,8 @@ export const TransactionCumulativeCompare: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const latestUnsafeUnprocessed = data.length > 0 ? data[data.length - 1].unsafeUnprocessed : 0;
+
   return (
     <div style={{ backgroundColor: "#1e1e1e", padding: "20px", borderRadius: "8px" }}>
       <ResponsiveContainer width="100%" height={500}>
@@ -233,10 +239,16 @@ export const TransactionCumulativeCompare: React.FC = () => {
             dot={false}
             strokeDasharray="3 3"
           />
-
-
         </LineChart>
       </ResponsiveContainer>
+      <div style={{ marginTop: 24, color: '#fff', background: '#222', padding: 16, borderRadius: 8, textAlign: 'center' }}>
+        <div style={{ fontSize: 18, marginBottom: 8 }}>
+          <strong>Unsafe Failed Calls:</strong> {latestUnsafeUnprocessed}
+        </div>
+        <div style={{ fontSize: 18 }}>
+          <strong>Safe Prevented Calls:</strong> {circuitBreakerPreventedCalls}
+        </div>
+      </div>
     </div>
   );
 };

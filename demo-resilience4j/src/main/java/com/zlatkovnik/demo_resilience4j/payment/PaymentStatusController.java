@@ -22,6 +22,7 @@ public class PaymentStatusController {
         HashMap<String, Object> responseData = new HashMap<>();
         responseData.put("processedDepositRequests", paymentService.getProcessedDepositRequests());
         responseData.put("unprocessedDepositRequests", paymentDeadLetterQueue.getAll());
+        responseData.put("circuitBreakerPreventedCalls", paymentService.getCallsPreventedByCircuitBreaker());
         return responseData;
     }
 
