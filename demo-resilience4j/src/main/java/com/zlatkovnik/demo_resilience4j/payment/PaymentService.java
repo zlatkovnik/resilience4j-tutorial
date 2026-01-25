@@ -37,7 +37,7 @@ public class PaymentService {
         paymentCircuitBreaker.getEventPublisher().onCallNotPermitted(event -> callsPreventedByCircuitBreaker.incrementAndGet());
     }
 
-    @Bulkhead(name = "paymentBulkhead")
+    @Bulkhead(name = "paymentBulkhead", fallbackMethod = "depositFallback")
     @RateLimiter(name = "paymentRateLimiter", fallbackMethod = "depositFallback")
     @CircuitBreaker(name = "paymentCB", fallbackMethod = "depositFallback")
     @Retry(name = "paymentRetry")

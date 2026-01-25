@@ -162,3 +162,5 @@ Ova podešavanja se nalaze u `application.yaml` i mogu se prilagoditi potrebama 
 ## Zaključak
 
 Ovaj projekat ilustruje značaj otpornosti u mikroservisnim arhitekturama i daje praktičan primer kako se Resilience4j može integrisati u Spring Boot aplikaciju, uz vizuelnu analizu efekata i jasno praćenje ključnih metrika.
+
+> **Napomena:** Veoma je važno da se sva podešavanja Resilience4j mehanizama urade optimalno i u skladu sa realnim potrebama sistema. Neadekvatna ili previše restriktivna konfiguracija može dovesti do toga da servisi rade lošije nego bez ikakvih mehanizama otpornosti, uz veće kašnjenje, gubitak zahteva ili smanjenu propusnost sistema.
