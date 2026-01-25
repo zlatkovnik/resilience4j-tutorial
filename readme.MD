@@ -84,7 +84,7 @@ Frontend aplikacija prikazuje interaktivni grafikon koji omogućava poređenje o
 ![lime](images/icons/lime.png) **Safe processed** — Brzo obrađene transakcije sa otpornim servisom\
 ![pink](images/icons/pink.png) **Safe unprocessed** — Neobrađene transakcije sa otpornim servisom\
 ![green](images/icons/green.png) **Unsafe processed** — Uspešno obrađene transakcije bez otpornosti\
-![red](images/icons/red.png) **Unsafe unprocessed** — Neobrađene transakcije bez otpornosti\
+![red](images/icons/red.png) **Unsafe unprocessed** — Neobrađene transakcije bez otpornosti
 
 Periodi nedostupnosti eksternog servisa su prikazani crvenim providnim trakama na grafikonu.
 
