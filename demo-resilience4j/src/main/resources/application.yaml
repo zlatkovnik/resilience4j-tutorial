@@ -10,11 +10,29 @@ consumer:
 
 resilience4j:
   circuitbreaker:
+    circuit-breaker-aspect-order: 1
     instances:
       paymentCB:
-        automatic-transition-from-open-to-half-open-enabled: true
+        automaticTransitionFromOpenToHalfOpenEnabled: true
         minimumNumberOfCalls: 3
         slidingWindowSize: 3
         failureRateThreshold: 100
         waitDurationInOpenState: 10s
         permittedNumberOfCallsInHalfOpenState: 3
+  bulkhead:
+    instances:
+      paymentBulkhead:
+        maxConcurrentCalls: 20
+        maxWaitDuration: 0
+  retry:
+    retry-aspect-order: 2
+    instances:
+      paymentRetry:
+        maxAttempts: 2
+        waitDuration: 1s
+  ratelimiter:
+    instances:
+      paymentRateLimiter:
+        limitForPeriod: 5
+        limitRefreshPeriod: 2s
+        timeoutDuration: 1s

@@ -49,7 +49,7 @@ public class PaymentDeadLetterHandler {
             try {
                 log.info("Retry from DQL for {}", depositRequest.getTransactionId());
                 paymentService.deposit(depositRequest);
-                Thread.sleep(100);
+                Thread.sleep(500);
             } catch (Exception e) {
                 // Fallback in PaymentService will put it back in the queue
             }

@@ -2,6 +2,9 @@ package com.zlatkovnik.demo_resilience4j.payment;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +37,10 @@ public class PaymentService {
         paymentCircuitBreaker.getEventPublisher().onCallNotPermitted(event -> callsPreventedByCircuitBreaker.incrementAndGet());
     }
 
+    @Bulkhead(name = "paymentBulkhead")
+    @RateLimiter(name = "paymentRateLimiter", fallbackMethod = "depositFallback")
     @CircuitBreaker(name = "paymentCB", fallbackMethod = "depositFallback")
+    @Retry(name = "paymentRetry")
     public void deposit(DepositRequest depositRequest) {
         restTemplate.postForEntity(API_URL, depositRequest, String.class);
         depositRequest.setProcessedTimestamp(LocalDateTime.now());
