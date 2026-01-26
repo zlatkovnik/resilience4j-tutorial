@@ -129,7 +129,7 @@ Cilj ove simulacije je testiranje Circuit Breaker i Retry mehanizama, kao i opor
 ```yaml
 resilience4j:
   circuitbreaker:
-    circuit-breaker-aspect-order: 1  # Redosled izvršavanja aspekta (manja vrednost = viši prioritet)
+    circuit-breaker-aspect-order: 1  # Redosled izvršavanja aspekta (veća vrednost = viši prioritet)
     instances:
       paymentCB:
         automaticTransitionFromOpenToHalfOpenEnabled: true  # Automatski prelazak iz OPEN u HALF_OPEN (potrebno zbog DQL-a)
